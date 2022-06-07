@@ -1,24 +1,36 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+
+import "./App.css";
+import DataForm from "./Components/DataForm";
+import ProfileMarkup from "./Components/ProfiuleMarkup";
+import { Profile } from "./utils/constants";
 
 function App() {
+  const profileFromStorage = localStorage.getItem("profile-data");
+  const [profile, setProfile] = useState<Profile | undefined>(
+    profileFromStorage ? JSON.parse(profileFromStorage || "") : undefined
+  );
+  const [step, setStep] = useState<"form" | "profile">(
+    profile ? "profile" : "form"
+  );
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="flex flex-col min-h-full text-white">
+      <header className=""></header>
+      <main className="flex-grow flex flex-col">
+        <div className="w-full max-w-4xl mx-auto">
+          {step === "form" && !profile && (
+            <DataForm
+              onDataSubmited={(profile) => {
+                localStorage.setItem("profile-data", JSON.stringify(profile));
+                setProfile(profile);
+                setStep("profile");
+              }}
+            />
+          )}
+          {step === "profile" && profile && <ProfileMarkup profile={profile} />}
+        </div>
+      </main>
     </div>
   );
 }
